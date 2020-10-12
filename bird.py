@@ -13,12 +13,21 @@ class Bird:
         self.speed = 0
         self.gravity = 0.2
         self.flap = 5
-        self.image = pygame.image.load(os.path.join("images", "midflap.png"))
+        self.images = [
+            pygame.image.load(os.path.join("images", "midflap.png")),
+            pygame.image.load(os.path.join("images", "downflap.png")),
+            pygame.image.load(os.path.join("images", "midflap.png")),
+            pygame.image.load(os.path.join("images", "upflap.png")),
+        ]
+        self.frame = 0
 
     def draw(self):
-        screen.blit(self.image, (self.x, round(self.y)))
+        screen.blit(self.images[self.frame], (self.x, round(self.y)))
 
     def update(self):
+        self.frame += 1
+        if self.frame >= len(self.images):
+            self.frame = 0
         self.speed += self.gravity
         self.y += self.speed
 

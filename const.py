@@ -1,6 +1,6 @@
 
 SCREEN_WIDTH, SCREEN_HEIGHT = 288, 512
-GAP = 480
+GAP = 400
 
 # white color
 color = (255, 255, 255)
