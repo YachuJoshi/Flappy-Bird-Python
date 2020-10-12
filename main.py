@@ -19,6 +19,7 @@ pygame.display.set_icon(icon)
 
 # Background image & sound
 backgroundImg = pygame.image.load(os.path.join("images", "bg.png"))
+foregroundImg = pygame.image.load(os.path.join("images", "fg.png"))
 # mixer.music.load(os.path.join("sounds", "background.wav"))
 # mixer.music.play(-1)
 
@@ -102,7 +103,21 @@ def generate_pipes():
     }
     top_pipe = Pipe(top_pipe_config)
     bottom_pipe = Pipe(bottom_pipe_config)
-    pipes.append({"top_pipe": top_pipe, "bottom_pipe": bottom_pipe})
+    pipes.append({"top": top_pipe, "bottom": bottom_pipe})
+
+
+def check_pipe_collision(bird, pipe):
+    return (
+        bird.x + bird.width / 2 > pipe["top"].x
+        and bird.y - bird.height / 2 < pipe["top"].y + pipe["top"].height
+    ) or (
+        bird.x + bird.width / 2 > pipe["bottom"].x
+        and bird.y + bird.height / 2 > pipe["bottom"].y
+    )
+
+
+def check_road_collision(bird, road):
+    return bird.y + bird.height / 2 > SCREEN_HEIGHT - road.get_height()
 
 
 generate_pipes()
@@ -151,6 +166,8 @@ while game_screen_running:
     screen.fill((0, 0, 0))
     screen.blit(backgroundImg, (0, 0))
 
+    distance += 1
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             game_screen_running = False
@@ -161,11 +178,26 @@ while game_screen_running:
     bird.draw()
     bird.update()
 
-    for pipe in pipes:
-        pipe["top_pipe"].draw()
-        pipe["top_pipe"].update()
-        pipe["bottom_pipe"].draw()
-        pipe["bottom_pipe"].update()
+    if distance % 120 == 0:
+        generate_pipes()
 
+    for pipe in pipes:
+        if pipe["top"].x + pipe["top"].width <= 0:
+            pipes.pop(0)
+
+    for pipe in pipes:
+        if check_pipe_collision(bird, pipe):
+            print("PIPE COLLISION")
+
+    if check_road_collision(bird, foregroundImg):
+        print('ROAD COLLISION')
+
+    for pipe in pipes:
+        pipe["top"].draw()
+        pipe["top"].update()
+        pipe["bottom"].draw()
+        pipe["bottom"].update()
+
+    screen.blit(foregroundImg, (0, SCREEN_HEIGHT - foregroundImg.get_height()))
     pygame.display.update()
     clock.tick(60)
