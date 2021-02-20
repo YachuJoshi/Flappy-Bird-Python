@@ -1,1 +1,1 @@
-## Flappy Bird Game in Python : Ongoing
+## Flappy Bird Game in Python
